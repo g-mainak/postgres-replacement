@@ -11,3 +11,6 @@ else:
 		commands.getstatusoutput("cp -f buf_init_orig.c buf_init.c")
 	else:
 		commands.getstatusoutput("cp -f buf_init_mod.c buf_init.c")
+	commands.getstatusoutput("cd ../../../..")
+	commands.getstatusoutput("make ")
+	commands.getstatusoutput("make install")
