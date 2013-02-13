@@ -76,6 +76,9 @@ InitBufferPool(void)
 	bool		foundBufs,
 				foundDescs;
 
+	Dll *BufDLL = dllMake();
+	DllNode **BufNodes[NBuffers];
+
 	BufferDescriptors = (BufferDesc *)
 		ShmemInitStruct("Buffer Descriptors",
 						NBuffers * sizeof(BufferDesc), &foundDescs);

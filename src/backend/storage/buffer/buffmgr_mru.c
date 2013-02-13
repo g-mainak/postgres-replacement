@@ -2535,7 +2535,7 @@ LockBuffer(Buffer buffer, int mode)
 	else if (mode == BUFFER_LOCK_EXCLUSIVE)
 	{
 		LWLockAcquire(buf->content_lock, LW_EXCLUSIVE);
-		dllMove(BufDLL, BufNodes[buffer], HEAD)
+		dllMove(BufDLL, BufNodes[buffer], HEAD);
 	}
 	else
 		elog(ERROR, "unrecognized buffer lock mode: %d", mode);
