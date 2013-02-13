@@ -79,8 +79,14 @@ InitBufferPool(void)
 	bool		foundBufs,
 				foundDescs;
 
+	int i;
 	BufDLL = dllMake();
-	BufNodes = malloc(sizeof(BufNodes) * NBuffers);
+	BufNodes = malloc(sizeof(BufNodes) * (NBuffers + 5));
+	for (i = 0; i < NBuffers; i++)
+	{
+		BufNodes[i] = 0;
+	}
+
 
 	BufferDescriptors = (BufferDesc *)
 		ShmemInitStruct("Buffer Descriptors",

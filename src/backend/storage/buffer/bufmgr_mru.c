@@ -2522,8 +2522,9 @@ UnlockBuffers(void)
 void
 LockBuffer(Buffer buffer, int mode)
 {
-	// fprintf(stderr, "LockBuffer\n");
+	// fprintf(stderr, "LockBuffer\n Buffer: %d\nPointer:%p\n", buffer, BufNodes[buffer-1]);
 	volatile BufferDesc *buf;
+	elog(LOG, "in LockBuffer. Buffer: %d", buffer);
 
 	Assert(BufferIsValid(buffer));
 	if (BufferIsLocal(buffer))
@@ -2535,13 +2536,19 @@ LockBuffer(Buffer buffer, int mode)
 		LWLockRelease(buf->content_lock);
 	else if (mode == BUFFER_LOCK_SHARE)
 	{
+		LWLockAcquire(BufDllLock, LW_EXCLUSIVE);
 		LWLockAcquire(buf->content_lock, LW_SHARED);
-		dllMove(BufDLL, BufNodes[buffer], HEAD);
+		if (BufNodes[buffer - 1])
+			dllMove(BufDLL, BufNodes[buffer - 1], HEAD);
+		LWLockRelease(BufDllLock);
 	}
 	else if (mode == BUFFER_LOCK_EXCLUSIVE)
 	{
+		LWLockAcquire(BufDllLock, LW_EXCLUSIVE);
 		LWLockAcquire(buf->content_lock, LW_EXCLUSIVE);
-		dllMove(BufDLL, BufNodes[buffer], HEAD);
+		if (BufNodes[buffer - 1])
+			dllMove(BufDLL, BufNodes[buffer - 1], HEAD);
+		LWLockRelease(BufDllLock);
 	}
 	else
 		elog(ERROR, "unrecognized buffer lock mode: %d", mode);

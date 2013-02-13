@@ -117,6 +117,7 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 	volatile BufferDesc *buf;
 	Latch	   *bgwriterLatch;
 	int			trycounter;
+	elog(LOG, "in StrategyGetBuffer");
 
 	// fprintf(stderr, "StrategyGetBuffer\n");
 
@@ -128,6 +129,7 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 	/* Nope, so lock the freelist */
 	*lock_held = true;
 	LWLockAcquire(BufFreelistLock, LW_EXCLUSIVE);
+	LWLockAcquire(BufDllLock, LW_EXCLUSIVE);
 
 	/*
 	 * We count buffer allocation requests so that the bgwriter can estimate
@@ -178,6 +180,8 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 		{
 			BufNodes[StrategyControl->firstFreeBuffer] = 
 				dllInsertInt(BufDLL, StrategyControl->firstFreeBuffer, HEAD);
+			LWLockRelease(BufDllLock);
+			// elog(ERROR, "Successfully got buf from list");
 			return buf;
 		}
 		UnlockBufHdr(buf);
@@ -197,6 +201,8 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 		{
 			/* Found a usable buffer */
 			dllMove(BufDLL, buf, HEAD);
+			LWLockRelease(BufDllLock);
+			elog(LOG, "Successfully got buf from list");
 			return buf;
 		}
 		UnlockBufHdr(buf);
@@ -212,6 +218,7 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 	elog(ERROR, "no unpinned buffers available");
 
 	/* not reached */
+	LWLockRelease(BufDllLock);
 	return NULL;
 }
 
