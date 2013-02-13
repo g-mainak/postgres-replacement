@@ -1,20 +1,6 @@
 #include "dll.h"
 #include <stdlib.h>
 
-struct dll
-{
-	int size;
-	Node *head;
-	Node *tail;
-};
-
-struct node
-{
-	int data;
-	Node *prev;
-	Node *next;
-};
-
 Dll *dllMake(void)
 {
 	Dll *out;

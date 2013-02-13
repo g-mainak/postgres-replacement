@@ -4,6 +4,20 @@
 typedef struct node Node;
 typedef struct dll Dll;
 
+struct dll
+{
+	int size;
+	Node *head;
+	Node *tail;
+};
+
+struct node
+{
+	int data;
+	Node *prev;
+	Node *next;
+};
+
 Dll *dllMake(void);
 Node *nodeMake(int d);
 void dllInsert(Dll *dll, Node *node, int pos);
