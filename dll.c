@@ -11,17 +11,17 @@ Dll *dllMake(void)
 	return out;
 }
 
-Node *nodeMake(int d)
+DllNode *nodeMake(int d)
 {
-	Node *out;
-	out = malloc(sizeof(Node));
+	DllNode *out;
+	out = malloc(sizeof(DllNode));
 	out->data = d;
 	out->prev = 0;
 	out->next = 0;
 	return out;
 }
 
-void dllInsert(Dll *dll, Node *node, int pos)
+void dllInsert(Dll *dll, DllNode *node, int pos)
 {
 	if (dll->size == 0)
 	{
@@ -45,12 +45,13 @@ void dllInsert(Dll *dll, Node *node, int pos)
 
 void dllInsertInt(Dll *dll, int d, int pos)
 {
-	Node *n;
+	DllNode *n;
 	n = nodeMake(d);
 	dllInsert(dll, n, pos);
+	return n;
 }
 
-void dllPop(Dll *dll, Node *node)
+void dllPop(Dll *dll, DllNode *node)
 {
 	if (node->prev)
 	{
@@ -73,7 +74,7 @@ void dllPop(Dll *dll, Node *node)
 	dll->size--;
 }
 
-void dllMove(Dll *dll, Node *node, int pos)
+void dllMove(Dll *dll, DllNode *node, int pos)
 {
 	dllPop(dll, node);
 	dllInsert(dll, node, pos);
