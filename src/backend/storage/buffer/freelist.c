@@ -18,6 +18,9 @@
 #include "storage/buf_internals.h"
 #include "storage/bufmgr.h"
 
+Dll *BufDLL;
+DllNode **BufNodes;
+
 
 /*
  * The shared freelist control information.
@@ -114,6 +117,8 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 	volatile BufferDesc *buf;
 	Latch	   *bgwriterLatch;
 	int			trycounter;
+
+	// fprintf(stderr, "StrategyGetBuffer\n");
 
 	/*
 	 * If given a strategy object, see whether it can select a buffer. We

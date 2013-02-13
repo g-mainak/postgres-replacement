@@ -24,6 +24,3 @@ void dllInsert(Dll *dll, DllNode *node, int pos);
 DllNode *dllInsertInt(Dll *dll, int d, int pos);
 void dllPop(Dll *dll, DllNode *node);
 void dllMove(Dll *dll, DllNode *node, int pos);
-
-extern Dll *BufDLL;
-extern DllNode **BufNodes;

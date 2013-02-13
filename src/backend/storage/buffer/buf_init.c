@@ -23,6 +23,9 @@ BufferDesc *BufferDescriptors;
 char	   *BufferBlocks;
 int32	   *PrivateRefCount;
 
+Dll *BufDLL;
+DllNode **BufNodes;
+
 
 /*
  * Data Structures:
@@ -76,8 +79,8 @@ InitBufferPool(void)
 	bool		foundBufs,
 				foundDescs;
 
-	Dll *BufDLL = dllMake();
-	DllNode **BufNodes[NBuffers];
+	BufDLL = dllMake();
+	BufNodes = malloc(sizeof(BufNodes) * NBuffers);
 
 	BufferDescriptors = (BufferDesc *)
 		ShmemInitStruct("Buffer Descriptors",

@@ -2522,6 +2522,7 @@ UnlockBuffers(void)
 void
 LockBuffer(Buffer buffer, int mode)
 {
+	// fprintf(stderr, "LockBuffer\n");
 	volatile BufferDesc *buf;
 
 	Assert(BufferIsValid(buffer));
