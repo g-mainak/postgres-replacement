@@ -119,15 +119,6 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 	 * If given a strategy object, see whether it can select a buffer. We
 	 * assume strategy objects don't need the BufFreelistLock.
 	 */
-	if (strategy != NULL)
-	{
-		buf = GetBufferFromRing(strategy);
-		if (buf != NULL)
-		{
-			*lock_held = false;
-			return buf;
-		}
-	}
 
 	/* Nope, so lock the freelist */
 	*lock_held = true;
@@ -180,9 +171,8 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 		LockBufHdr(buf);
 		if (buf->refcount == 0 && buf->usage_count == 0)
 		{
-			if (strategy != NULL)
-				AddBufferToRing(strategy, buf);
-			BufNodes[StrategyControl->firstFreeBuffer] = dllInsertInt(BufDLL, StrategyControl->firstFreeBuffer, HEAD);
+			BufNodes[StrategyControl->firstFreeBuffer] = 
+				dllInsertInt(BufDLL, StrategyControl->firstFreeBuffer, HEAD);
 			return buf;
 		}
 		UnlockBufHdr(buf);
@@ -190,9 +180,9 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 
 	/* Nothing on the freelist, so run the "clock sweep" algorithm */
 	DllNode *d = BufDLL->head;
-	for (; d->next; d = d->next)
+	for (; d; d = d->next)
 	{
-		buf = d;
+		buf = &BufferDescriptors[d->data];
 		/*
 		 * If the buffer is pinned or has a nonzero usage_count, we cannot use
 		 * it; decrement the usage_count (unless pinned) and keep scanning.
@@ -200,19 +190,9 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 		LockBufHdr(buf);
 		if (buf->refcount == 0)
 		{
-			if (buf->usage_count > 0)
-			{
-				buf->usage_count--;
-				trycounter = NBuffers;
-			}
-			else
-			{
-				/* Found a usable buffer */
-				if (strategy != NULL)
-					AddBufferToRing(strategy, buf);
-				dllMove(BufDLL, buf, HEAD);
-				return buf;
-			}
+			/* Found a usable buffer */
+			dllMove(BufDLL, buf, HEAD);
+			return buf;
 		}
 		UnlockBufHdr(buf);
 	}
