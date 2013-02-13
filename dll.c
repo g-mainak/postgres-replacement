@@ -43,7 +43,7 @@ void dllInsert(Dll *dll, DllNode *node, int pos)
 	dll->size++;
 }
 
-void dllInsertInt(Dll *dll, int d, int pos)
+DllNode* dllInsertInt(Dll *dll, int d, int pos)
 {
 	DllNode *n;
 	n = nodeMake(d);
