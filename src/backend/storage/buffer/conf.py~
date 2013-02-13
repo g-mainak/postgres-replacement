@@ -17,3 +17,6 @@ else:
 	commands.getstatusoutput("~/pgsql/bin/initdb -D ~/pgdata")
 	commands.getstatusoutput("rm ~/pgdata/postgresql.conf")
 	commands.getstatusoutput("cp /home/accts/mg828/postgres-replacement/src/backend/storage/buffer/postgresql.conf /home/accts/mg828/pgdata/postgresql.conf")
+	os.chdir("/home/accts/mg828/")
+	print commands.getstatusoutput("~/pgsql/bin/pg_ctl start -D ~/pgdata -l log.log -o \"-B 50 -N 8 -o \'-te -fm -fh\'\"")
+	print commands.getstatusoutput("~/pgsql/bin/psql test")
